@@ -3,19 +3,22 @@ package com.sasho.hibernate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
-import com.sasho.hibernate.domain.Authority;
 import com.sasho.hibernate.repos.AuthorityRepo;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-import java.util.Set;
-
 
 @Configuration
 @RequiredArgsConstructor
+@OpenAPIDefinition(security = {@SecurityRequirement(name = "bearer-key")})
 public class InitialConfiguration implements CommandLineRunner {
     private final AuthorityRepo authorityRepo;
 
@@ -28,6 +31,16 @@ public class InitialConfiguration implements CommandLineRunner {
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.registerModule(hibernate5Module);
         return mapper;
+    }
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        SecurityScheme securityScheme = new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT");
+        Components components = new Components().addSecuritySchemes("bearer-key", securityScheme);
+        return new OpenAPI().components(components);
     }
 
     @Override
