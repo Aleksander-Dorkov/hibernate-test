@@ -1,7 +1,7 @@
 package com.sasho.hibernate.controller.mappers;
 
 import com.sasho.hibernate.controller.dto.request.AddressDto;
-import com.sasho.hibernate.controller.dto.request.AuthorDto;
+import com.sasho.hibernate.controller.dto.request.UserDto;
 import com.sasho.hibernate.controller.dto.request.BookDto;
 import com.sasho.hibernate.controller.dto.request.CarDto;
 import com.sasho.hibernate.controller.dto.response.AllAddressResp;
@@ -20,7 +20,7 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 public interface ApiMapper {
     AuthorByIdResponse toAuthorByIdResponse(DomainUser domainUser);
 
-    DomainUser toAuthor(AuthorDto request);
+    DomainUser toAuthor(UserDto request);
 
     Book toBook(BookDto request);
 

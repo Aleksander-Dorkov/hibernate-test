@@ -17,3 +17,7 @@ spring:
 logging:
   pattern:
     dateformat: yyyy-MMM-dd HH:mm:ss
+springdoc:
+  swagger-ui:
+    csrf:
+      enabled: true

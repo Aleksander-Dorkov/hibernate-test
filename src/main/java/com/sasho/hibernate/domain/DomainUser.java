@@ -3,23 +3,26 @@ package com.sasho.hibernate.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "authors")
+@Table(name = "users")
 @Access(AccessType.FIELD)
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-public class DomainUser {
+public class DomainUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "author_id_generator")
     @SequenceGenerator(name = "author_id_generator", sequenceName = "author_id_seq", allocationSize = 1)
     private Long id;
-    private String name;
+    @Column(unique = true, nullable = false)
+    private String username;
+    private String password;
     private int birthYear;
     @OneToOne(
             fetch = FetchType.LAZY,
@@ -37,11 +40,19 @@ public class DomainUser {
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE}
     )
-    @JoinTable(name = "authors_cars",
-            joinColumns = @JoinColumn(name = "author_id", referencedColumnName = "id"),
+    @JoinTable(name = "users_cars",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "car_id", referencedColumnName = "id")
     )
     private Set<Car> cars = new HashSet<>();
+    @ManyToMany(
+            fetch = FetchType.LAZY
+    )
+    @JoinTable(name = "users_authorities",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id")
+    )
+    private Set<Authority> authorities = new HashSet<>();
 
     public void addBooks(Set<Book> books) {
         for (Book book : books) {
@@ -57,5 +68,40 @@ public class DomainUser {
     public void addAddress(Address address) {
         this.address = address;
         address.setUser(this);
+    }
+
+    @Override
+    public Set<Authority> getAuthorities() {
+        return this.authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

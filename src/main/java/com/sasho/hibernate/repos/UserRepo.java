@@ -8,9 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AuthorRepo extends JpaRepository<DomainUser, Long> {
+public interface UserRepo extends JpaRepository<DomainUser, Long> {
 
     @EntityGraph(attributePaths = {"address", "cars", "books"})
     @Query("SELECT d FROM DomainUser d WHERE d.id = :id")
     DomainUser findByIdWithAllRelations(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"authorities"})
+    DomainUser findByUsername(String username);
 }

@@ -22,7 +22,7 @@ public class Address {
     @OneToOne(
             fetch = FetchType.LAZY
     )
-    @JoinColumn(name = "author_id", referencedColumnName = "id", unique = true, nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true, nullable = false)
     private DomainUser user;
 
     public void setUser(DomainUser domainUser) {

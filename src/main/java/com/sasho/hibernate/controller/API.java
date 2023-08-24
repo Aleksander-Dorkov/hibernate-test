@@ -1,7 +1,7 @@
 package com.sasho.hibernate.controller;
 
 import com.sasho.hibernate.controller.dto.request.AddressDto;
-import com.sasho.hibernate.controller.dto.request.AuthorDto;
+import com.sasho.hibernate.controller.dto.request.UserDto;
 import com.sasho.hibernate.controller.dto.request.BookDto;
 import com.sasho.hibernate.controller.dto.request.CarDto;
 import com.sasho.hibernate.controller.dto.response.AllAddressResp;
@@ -12,10 +12,12 @@ import com.sasho.hibernate.domain.DomainUser;
 import com.sasho.hibernate.domain.Book;
 import com.sasho.hibernate.domain.Car;
 import com.sasho.hibernate.repos.AddressRepo;
-import com.sasho.hibernate.repos.AuthorRepo;
+import com.sasho.hibernate.repos.UserRepo;
 import com.sasho.hibernate.repos.BookRepo;
 import com.sasho.hibernate.repos.CarRepo;
+import com.sasho.hibernate.security.dto.CurrentUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +27,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class API {
     private final BookRepo bookRepo;
-    private final AuthorRepo authorRepo;
+    private final UserRepo authorRepo;
     private final AddressRepo addressRepo;
     private final CarRepo carRepo;
     private final ApiMapper mapper;
@@ -36,7 +38,8 @@ public class API {
     }
 
     @GetMapping("/users")
-    public List<DomainUser> getAllAuthors() {
+    public List<DomainUser> getAllAuthors(@AuthenticationPrincipal CurrentUser a) {
+        System.out.println(a);
         return this.authorRepo.findAll();
     }
 
@@ -63,7 +66,7 @@ public class API {
     }
 
     @PostMapping("/user")
-    public DomainUser postBook(@RequestBody AuthorDto request) {
+    public DomainUser postBook(@RequestBody UserDto request) {
         DomainUser domainUser = this.mapper.toAuthor(request);
         return authorRepo.save(domainUser);
     }
